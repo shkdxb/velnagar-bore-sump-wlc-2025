@@ -888,98 +888,98 @@ void handleRoot()
     server.client().stop();
 }
 
-void handleRoot1()
-{
-    String html = "<!DOCTYPE html><html><head><title>WLC</title>";
-    html += "<meta http-equiv='refresh' content='30'>";
-    html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
-    html += "<style>body{font-family:sans-serif;padding:10px;max-width:800px;margin:auto;}h1{font-size:1.5em;}label{display:block;margin-top:10px;}input[type=number]{width:100%;padding:4px;}input[type=submit]{margin-top:15px;padding:6px 12px;}hr{margin:20px 0;}a{margin-right:10px;text-decoration:none;color:blue;}table{width:100%;}td{vertical-align:top;width:50%;}</style>";
-    html += "</head><body>";
-    html += "<h1>Water Level Controller</h1>";
+// void handleRoot1()
+// {
+//     String html = "<!DOCTYPE html><html><head><title>WLC</title>";
+//     html += "<meta http-equiv='refresh' content='30'>";
+//     html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
+//     html += "<style>body{font-family:sans-serif;padding:10px;max-width:800px;margin:auto;}h1{font-size:1.5em;}label{display:block;margin-top:10px;}input[type=number]{width:100%;padding:4px;}input[type=submit]{margin-top:15px;padding:6px 12px;}hr{margin:20px 0;}a{margin-right:10px;text-decoration:none;color:blue;}table{width:100%;}td{vertical-align:top;width:50%;}</style>";
+//     html += "</head><body>";
+//     html += "<h1>Water Level Controller</h1>";
 
-    html += "<table><tr><td>"; // Left column (BORE)
-    html += "<h2>Bore Live Data</h2>";
-    html += "<table border='0' cellpadding='5'>";
-    html += "<tr><td><strong>Bore Voltage:</strong></td><td>" + String(voltage, 1) + " V</td></tr>";
-    html += "<tr><td><strong>Bore Current:</strong></td><td>" + String(current, 2) + " A</td></tr>";
-    html += "<tr><td><strong>Bore Power:</strong></td><td>" + String(power, 1) + " W</td></tr>";
-    html += "<tr><td><strong>Bore PF:</strong></td><td>" + String(pf, 2) + "</td></tr>";
-    html += "<tr><td><strong>Bore UGT:</strong></td><td>" + String("N/A") + "</td></tr>";
-    html += "<tr><td><strong>Bore OHT:</strong></td><td>" + String(digitalRead(FLOAT_BORE_OHT_PIN) ? "OK" : "LOW") + "</td></tr>";
-    html += "<tr><td><strong>Bore Motor Status:</strong></td><td>" + String(boreMode == 1 ? "WAITING" : boreMode == 2 ? boreErrorMessage
-                                                                                                    : boreMode == 3   ? "ON"
-                                                                                                                      : "OFF") +
-            "</td></tr>";
-    unsigned long elapsed = (millis() - (boreMotorRunning ? boreLastOnTime : boreLastOffTime)) / 1000; // in sec
-    unsigned long remaining = (boreMotorRunning ? boreSettings.onTime : boreSettings.offTime) * 60 - elapsed;
-    html += "<tr><td><strong>Bore Remaining Time(" + String(remaining > 60 ? "min" : "sec") + String("):</strong></td><td>") + String(remaining > 60 ? remaining / 60 : remaining) + "</td></tr>";
-    html += "<tr><td><strong>Bore Status:</strong></td><td>" + String(boreErrorMessage) + "</td></tr>";
-    html += "</table><hr>";
+//     html += "<table><tr><td>"; // Left column (BORE)
+//     html += "<h2>Bore Live Data</h2>";
+//     html += "<table border='0' cellpadding='5'>";
+//     html += "<tr><td><strong>Bore Voltage:</strong></td><td>" + String(voltage, 1) + " V</td></tr>";
+//     html += "<tr><td><strong>Bore Current:</strong></td><td>" + String(current, 2) + " A</td></tr>";
+//     html += "<tr><td><strong>Bore Power:</strong></td><td>" + String(power, 1) + " W</td></tr>";
+//     html += "<tr><td><strong>Bore PF:</strong></td><td>" + String(pf, 2) + "</td></tr>";
+//     html += "<tr><td><strong>Bore UGT:</strong></td><td>" + String("N/A") + "</td></tr>";
+//     html += "<tr><td><strong>Bore OHT:</strong></td><td>" + String(digitalRead(FLOAT_BORE_OHT_PIN) ? "OK" : "LOW") + "</td></tr>";
+//     html += "<tr><td><strong>Bore Motor Status:</strong></td><td>" + String(boreMode == 1 ? "WAITING" : boreMode == 2 ? boreErrorMessage
+//                                                                                                     : boreMode == 3   ? "ON"
+//                                                                                                                       : "OFF") +
+//             "</td></tr>";
+//     unsigned long elapsed = (millis() - (boreMotorRunning ? boreLastOnTime : boreLastOffTime)) / 1000; // in sec
+//     unsigned long remaining = (boreMotorRunning ? boreSettings.onTime : boreSettings.offTime) * 60 - elapsed;
+//     html += "<tr><td><strong>Bore Remaining Time(" + String(remaining > 60 ? "min" : "sec") + String("):</strong></td><td>") + String(remaining > 60 ? remaining / 60 : remaining) + "</td></tr>";
+//     html += "<tr><td><strong>Bore Status:</strong></td><td>" + String(boreErrorMessage) + "</td></tr>";
+//     html += "</table><hr>";
 
-    html += "<form action='/settings' method='POST'>";
-    html += "<label>Over Voltage:<input type='number' step='0.1' name='bov' value='" + String(boreSettings.overVoltage) + "'></label>";
-    html += "<label>Under Voltage:<input type='number' step='0.1' name='buv' value='" + String(boreSettings.underVoltage) + "'></label>";
-    html += "<label>Over Current:<input type='number' step='0.1' name='boc' value='" + String(boreSettings.overCurrent) + "'></label>";
-    html += "<label>Under Current:<input type='number' step='0.1' name='buc' value='" + String(boreSettings.underCurrent) + "'></label>";
-    html += "<label>Min PF:<input type='number' step='0.01' name='bpf' value='" + String(boreSettings.minPF) + "'></label>";
-    html += "<label>On Time (min):<input type='number' name='bot' value='" + String(boreSettings.onTime) + "'></label>";
-    html += "<label>Off Time (min):<input type='number' name='bft' value='" + String(boreSettings.offTime) + "'></label>";
-    html += "<label>Power On Delay (sec):<input type='number' name='bod' value='" + String(boreSettings.PowerOnDelay) + "'></label>";
+//     html += "<form action='/settings' method='POST'>";
+//     html += "<label>Over Voltage:<input type='number' step='0.1' name='bov' value='" + String(boreSettings.overVoltage) + "'></label>";
+//     html += "<label>Under Voltage:<input type='number' step='0.1' name='buv' value='" + String(boreSettings.underVoltage) + "'></label>";
+//     html += "<label>Over Current:<input type='number' step='0.1' name='boc' value='" + String(boreSettings.overCurrent) + "'></label>";
+//     html += "<label>Under Current:<input type='number' step='0.1' name='buc' value='" + String(boreSettings.underCurrent) + "'></label>";
+//     html += "<label>Min PF:<input type='number' step='0.01' name='bpf' value='" + String(boreSettings.minPF) + "'></label>";
+//     html += "<label>On Time (min):<input type='number' name='bot' value='" + String(boreSettings.onTime) + "'></label>";
+//     html += "<label>Off Time (min):<input type='number' name='bft' value='" + String(boreSettings.offTime) + "'></label>";
+//     html += "<label>Power On Delay (sec):<input type='number' name='bod' value='" + String(boreSettings.PowerOnDelay) + "'></label>";
 
-    html += "<label><input type='checkbox' name='boredryRun' " + String(boreSettings.dryRun ? "checked" : "") + "> Enable Dry Run</label>";
-    html += "<label><input type='checkbox' name='borevoltage' " + String(boreSettings.detectVoltage ? "checked" : "") + "> Detect Voltage</label>";
-    html += "<label><input type='checkbox' name='borecurrent' " + String(boreSettings.detectCurrent ? "checked" : "") + "> Detect Current</label>";
-    html += "<label><input type='checkbox' name='borecyclic' " + String(boreSettings.cyclicTimer ? "checked" : "") + "> Cyclic Timer</label>";
+//     html += "<label><input type='checkbox' name='boredryRun' " + String(boreSettings.dryRun ? "checked" : "") + "> Enable Dry Run</label>";
+//     html += "<label><input type='checkbox' name='borevoltage' " + String(boreSettings.detectVoltage ? "checked" : "") + "> Detect Voltage</label>";
+//     html += "<label><input type='checkbox' name='borecurrent' " + String(boreSettings.detectCurrent ? "checked" : "") + "> Detect Current</label>";
+//     html += "<label><input type='checkbox' name='borecyclic' " + String(boreSettings.cyclicTimer ? "checked" : "") + "> Cyclic Timer</label>";
 
-    html += "</td><td>"; // Right column (SUMP)
-    html += "<h2>Sump Live Data</h2>";
-    html += "<table border='0' cellpadding='5'>";
-    html += "<tr><td><strong>Sump Voltage:</strong></td><td>" + String(voltage, 1) + " V</td></tr>";
-    html += "<tr><td><strong>Sump Current:</strong></td><td>" + String(current, 2) + " A</td></tr>";
-    html += "<tr><td><strong>Sump Power:</strong></td><td>" + String(power, 1) + " W</td></tr>";
-    html += "<tr><td><strong>Sump PF:</strong></td><td>" + String(pf, 2) + "</td></tr>";
-    html += "<tr><td><strong>Sump UGT:</strong></td><td>" + String(digitalRead(FLOAT_SUMP_UGT_PIN) ? "OK" : "LOW") + "</td></tr>";
-    html += "<tr><td><strong>Sump OHT:</strong></td><td>" + String(digitalRead(FLOAT_SUMP_OHT_PIN) ? "OK" : "LOW") + "</td></tr>";
-    html += "<tr><td><strong>Sump Motor Status:</strong></td><td>" + String(sumpMode == 1 ? "WAITING" : sumpMode == 2 ? boreErrorMessage
-                                                                                                    : sumpMode == 3   ? "ON"
-                                                                                                                      : "OFF") +
-            "</td></tr>";
-    elapsed = (millis() - (sumpMotorRunning ? sumpLastOnTime : sumpLastOffTime)) / 1000;
-    remaining = (sumpMotorRunning ? sumpSettings.onTime : sumpSettings.offTime) * 60 - elapsed;
-    html += "<tr><td><strong>Sump Remaining Time (min):</strong></td><td>" + String(remaining) + "</td></tr>";
-    html += "<tr><td><strong>Sump Status:</strong></td><td>" + String(sumpErrorMessage) + "</td></tr>";
-    html += "</table><hr>";
+//     html += "</td><td>"; // Right column (SUMP)
+//     html += "<h2>Sump Live Data</h2>";
+//     html += "<table border='0' cellpadding='5'>";
+//     html += "<tr><td><strong>Sump Voltage:</strong></td><td>" + String(voltage, 1) + " V</td></tr>";
+//     html += "<tr><td><strong>Sump Current:</strong></td><td>" + String(current, 2) + " A</td></tr>";
+//     html += "<tr><td><strong>Sump Power:</strong></td><td>" + String(power, 1) + " W</td></tr>";
+//     html += "<tr><td><strong>Sump PF:</strong></td><td>" + String(pf, 2) + "</td></tr>";
+//     html += "<tr><td><strong>Sump UGT:</strong></td><td>" + String(digitalRead(FLOAT_SUMP_UGT_PIN) ? "OK" : "LOW") + "</td></tr>";
+//     html += "<tr><td><strong>Sump OHT:</strong></td><td>" + String(digitalRead(FLOAT_SUMP_OHT_PIN) ? "OK" : "LOW") + "</td></tr>";
+//     html += "<tr><td><strong>Sump Motor Status:</strong></td><td>" + String(sumpMode == 1 ? "WAITING" : sumpMode == 2 ? boreErrorMessage
+//                                                                                                     : sumpMode == 3   ? "ON"
+//                                                                                                                       : "OFF") +
+//             "</td></tr>";
+//     elapsed = (millis() - (sumpMotorRunning ? sumpLastOnTime : sumpLastOffTime)) / 1000;
+//     remaining = (sumpMotorRunning ? sumpSettings.onTime : sumpSettings.offTime) * 60 - elapsed;
+//     html += "<tr><td><strong>Sump Remaining Time (min):</strong></td><td>" + String(remaining) + "</td></tr>";
+//     html += "<tr><td><strong>Sump Status:</strong></td><td>" + String(sumpErrorMessage) + "</td></tr>";
+//     html += "</table><hr>";
 
-    html += "<label>Over Voltage:<input type='number' step='0.1' name='sov' value='" + String(sumpSettings.overVoltage) + "'></label>";
-    html += "<label>Under Voltage:<input type='number' step='0.1' name='suv' value='" + String(sumpSettings.underVoltage) + "'></label>";
-    html += "<label>Over Current:<input type='number' step='0.1' name='soc' value='" + String(sumpSettings.overCurrent) + "'></label>";
-    html += "<label>Under Current:<input type='number' step='0.1' name='suc' value='" + String(sumpSettings.underCurrent) + "'></label>";
-    html += "<label>Min PF:<input type='number' step='0.01' name='spf' value='" + String(sumpSettings.minPF) + "'></label>";
-    html += "<label>On Time (min):<input type='number' name='sot' value='" + String(sumpSettings.onTime) + "'></label>";
-    html += "<label>Off Time (min):<input type='number' name='sft' value='" + String(sumpSettings.offTime) + "'></label>";
-    html += "<label>Power On Delay (sec):<input type='number' name='sod' value='" + String(sumpSettings.PowerOnDelay) + "'></label>";
+//     html += "<label>Over Voltage:<input type='number' step='0.1' name='sov' value='" + String(sumpSettings.overVoltage) + "'></label>";
+//     html += "<label>Under Voltage:<input type='number' step='0.1' name='suv' value='" + String(sumpSettings.underVoltage) + "'></label>";
+//     html += "<label>Over Current:<input type='number' step='0.1' name='soc' value='" + String(sumpSettings.overCurrent) + "'></label>";
+//     html += "<label>Under Current:<input type='number' step='0.1' name='suc' value='" + String(sumpSettings.underCurrent) + "'></label>";
+//     html += "<label>Min PF:<input type='number' step='0.01' name='spf' value='" + String(sumpSettings.minPF) + "'></label>";
+//     html += "<label>On Time (min):<input type='number' name='sot' value='" + String(sumpSettings.onTime) + "'></label>";
+//     html += "<label>Off Time (min):<input type='number' name='sft' value='" + String(sumpSettings.offTime) + "'></label>";
+//     html += "<label>Power On Delay (sec):<input type='number' name='sod' value='" + String(sumpSettings.PowerOnDelay) + "'></label>";
 
-    html += "<label><input type='checkbox' name='sumpdryRun' " + String(sumpSettings.dryRun ? "checked" : "") + "> Enable Dry Run</label>";
-    html += "<label><input type='checkbox' name='sumpvoltage' " + String(sumpSettings.detectVoltage ? "checked" : "") + "> Detect Voltage</label>";
-    html += "<label><input type='checkbox' name='sumpcurrent' " + String(sumpSettings.detectCurrent ? "checked" : "") + "> Detect Current</label>";
-    html += "<label><input type='checkbox' name='sumpcyclic' " + String(sumpSettings.cyclicTimer ? "checked" : "") + "> Cyclic Timer</label>";
+//     html += "<label><input type='checkbox' name='sumpdryRun' " + String(sumpSettings.dryRun ? "checked" : "") + "> Enable Dry Run</label>";
+//     html += "<label><input type='checkbox' name='sumpvoltage' " + String(sumpSettings.detectVoltage ? "checked" : "") + "> Detect Voltage</label>";
+//     html += "<label><input type='checkbox' name='sumpcurrent' " + String(sumpSettings.detectCurrent ? "checked" : "") + "> Detect Current</label>";
+//     html += "<label><input type='checkbox' name='sumpcyclic' " + String(sumpSettings.cyclicTimer ? "checked" : "") + "> Cyclic Timer</label>";
 
-    html += "<input type='submit' value='Save Settings'>";
-    html += "</form>";
+//     html += "<input type='submit' value='Save Settings'>";
+//     html += "</form>";
 
-    html += "</td></tr></table>";
+//     html += "</td></tr></table>";
 
-    html += "<hr>";
-    html += "<a href='/on?motor=bore'>Bore Motor ON</a> | ";
-    html += "<a href='/off?motor=bore'>Bore Motor OFF</a> | ";
-    html += "<a href='/on?motor=sump'>Sump Motor ON</a> | ";
-    html += "<a href='/off?motor=sump'>Sump Motor OFF</a> | ";
-    html += "<a href='/restart'>Restart ESP32</a>";
+//     html += "<hr>";
+//     html += "<a href='/on?motor=bore'>Bore Motor ON</a> | ";
+//     html += "<a href='/off?motor=bore'>Bore Motor OFF</a> | ";
+//     html += "<a href='/on?motor=sump'>Sump Motor ON</a> | ";
+//     html += "<a href='/off?motor=sump'>Sump Motor OFF</a> | ";
+//     html += "<a href='/restart'>Restart ESP32</a>";
 
-    html += "</body></html>";
-    Serial.println("Handle Root received");
-    server.send(200, "text/html", html);
-}
+//     html += "</body></html>";
+//     Serial.println("Handle Root received");
+//     server.send(200, "text/html", html);
+// }
 void handleOn()
 {
     String motor = server.hasArg("motor") ? server.arg("motor") : "";
